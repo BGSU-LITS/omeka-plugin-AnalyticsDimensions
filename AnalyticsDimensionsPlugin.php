@@ -84,9 +84,9 @@ class AnalyticsDimensionsPlugin extends Omeka_Plugin_AbstractPlugin
 
         if (preg_match('/^UA-\d+-\d+$/', $trackingId)) {
             // Output the tracking script and specify tracking ID.
-            echo PHP_EOL. '<script>';
-            echo PHP_EOL. file_get_contents(dirname(__FILE__). '/ga.js');
-            echo PHP_EOL. 'ga("create", "'. $trackingId. '", "auto");';
+            echo '<script>' . PHP_EOL;
+            echo file_get_contents(dirname(__FILE__). '/ga.js') . PHP_EOL;
+            echo 'ga("create", "'. $trackingId. '", "auto");' . PHP_EOL;
 
             // Specify collection title if a dimension and title are available.
             $dimension = (int) get_option('analytics_dimensions_collection');
@@ -95,8 +95,8 @@ class AnalyticsDimensionsPlugin extends Omeka_Plugin_AbstractPlugin
                 $title = $this->getCollectionTitle();
 
                 if ($title) {
-                    echo PHP_EOL. 'ga("set", "dimension';
-                    echo $dimension. '", "'. $title. '")';
+                    echo 'ga("set", "dimension';
+                    echo $dimension. '", "'. $title. '")' . PHP_EOL;
                 }
             }
 
@@ -107,14 +107,14 @@ class AnalyticsDimensionsPlugin extends Omeka_Plugin_AbstractPlugin
                 $title = $this->getExhibitTitle();
 
                 if ($title) {
-                    echo PHP_EOL. 'ga("set", "dimension';
-                    echo $dimension. '", "'. $title. '")';
+                    echo 'ga("set", "dimension';
+                    echo $dimension. '", "'. $title. '")' . PHP_EOL;
                 }
             }
 
             // Output to send the page view.
-            echo PHP_EOL. 'ga("send", "pageview");';
-            echo PHP_EOL. '</script>';
+            echo 'ga("send", "pageview");' . PHP_EOL;
+            echo '</script>' . PHP_EOL;
         }
     }
 
