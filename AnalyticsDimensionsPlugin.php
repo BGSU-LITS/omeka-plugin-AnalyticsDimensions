@@ -3,7 +3,7 @@
  * Omeka Analytics Dimensions Plugin
  *
  * @author John Kloor <kloor@bgsu.edu>
- * @copyright 2015 Bowling Green State University Libraries
+ * @copyright 2023 Bowling Green State University Libraries
  * @license MIT
  */
 
@@ -19,6 +19,7 @@ class AnalyticsDimensionsPlugin extends Omeka_Plugin_AbstractPlugin
      */
     protected $_hooks = array(
         'install',
+        'upgrade',
         'uninstall',
         'config',
         'config_form',
@@ -29,9 +30,9 @@ class AnalyticsDimensionsPlugin extends Omeka_Plugin_AbstractPlugin
      * @var array Plugin options.
      */
     protected $_options = array(
-        'analytics_dimensions_trackingId' => '',
-        'analytics_dimensions_collection' => 0,
-        'analytics_dimensions_exhibit' => 0
+        'analytics_dimensions_html' => '',
+        'analytics_dimensions_html_collection' => '',
+        'analytics_dimensions_html_exhibit' => ''
     );
 
     /**
@@ -40,6 +41,26 @@ class AnalyticsDimensionsPlugin extends Omeka_Plugin_AbstractPlugin
     public function hookInstall()
     {
         $this->_installOptions();
+    }
+
+    /**
+     * Hook to plugin upgrade.
+     */
+    public function hookUpgrade($args)
+    {
+        if (version_compare($args['old_version'], '2.0', '<')) {
+            $new = $this->_options;
+
+            $this->_options = array(
+                'analytics_dimensions_trackingId' => '',
+                'analytics_dimensions_collection' => 0,
+                'analytics_dimensions_exhibit' => 0
+            );
+
+            $this->_uninstallOptions();
+            $this->_options = $new;
+            $this->_installOptions();
+        }
     }
 
     /**
@@ -75,46 +96,33 @@ class AnalyticsDimensionsPlugin extends Omeka_Plugin_AbstractPlugin
     }
 
     /**
-     * Hook to output Google Analytics code in head of public themes.
+     * Hook to output analytics code in head of public themes.
      */
     public function hookPublicHead()
     {
-        // Check that a valid trackign ID was specified.
-        $trackingId = get_option('analytics_dimensions_trackingId');
+        // Output HTML code for tracker.
+        echo trim(get_option('analytics_dimensions_html')) . PHP_EOL;
 
-        if (preg_match('/^UA-\d+-\d+$/', $trackingId)) {
-            // Output the tracking script and specify tracking ID.
-            echo '<script>' . PHP_EOL;
-            echo file_get_contents(dirname(__FILE__). '/ga.js') . PHP_EOL;
-            echo 'ga("create", "'. $trackingId. '", "auto");' . PHP_EOL;
+        // Output HTML code for tracking a collection if available.
+        $html = get_option('analytics_dimensions_html_collection');
 
-            // Specify collection title if a dimension and title are available.
-            $dimension = (int) get_option('analytics_dimensions_collection');
+        if ($html) {
+            $title = $this->getCollectionTitle();
 
-            if ($dimension) {
-                $title = $this->getCollectionTitle();
-
-                if ($title) {
-                    echo 'ga("set", "dimension';
-                    echo $dimension. '", "'. $title. '")' . PHP_EOL;
-                }
+            if ($title) {
+                echo trim(sprintf($html, json_encode($title))). PHP_EOL;
             }
+        }
 
-            // Specify exhibit title if a dimension and title are available.
-            $dimension = (int) get_option('analytics_dimensions_exhibit');
+        // Output HTML code for tracking an exhibit if available.
+        $html = get_option('analytics_dimensions_html_exhibit');
 
-            if ($dimension) {
-                $title = $this->getExhibitTitle();
+        if ($html) {
+            $title = $this->getExhibitTitle();
 
-                if ($title) {
-                    echo 'ga("set", "dimension';
-                    echo $dimension. '", "'. $title. '")' . PHP_EOL;
-                }
+            if ($title) {
+                echo trim(sprintf($html, json_encode($title))). PHP_EOL;
             }
-
-            // Output to send the page view.
-            echo 'ga("send", "pageview");' . PHP_EOL;
-            echo '</script>' . PHP_EOL;
         }
     }
 

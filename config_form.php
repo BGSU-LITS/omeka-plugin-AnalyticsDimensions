@@ -5,37 +5,40 @@
  * Outputs the configuration form for the config_form hook.
  *
  * @author John Kloor <kloor@bgsu.edu>
- * @copyright 2015 Bowling Green State University Libraries
+ * @copyright 2023 Bowling Green State University Libraries
  * @license MIT
  * @package Analytics Dimensions
  */
 
-$select = range(0, 20);
-$select[0] = 'None';
-
 $sections = array(
-    'Google Analytics' => array(
+    'HTML' => array(
         array(
-            'name' => 'analytics_dimensions_trackingId',
-            'label' => __('Tracking ID'),
-            'explanation' => __('Example: UA-000000-01')
-        ),
-        array(
-            'name' => 'analytics_dimensions_collection',
-            'label' => __('Collection Dimension'),
-            'select' => $select,
+            'name' => 'analytics_dimensions_html',
+            'label' => __('Tracker'),
+            'textarea' => true,
             'explanation' => __(
-                'Create a Custom Dimension in Google Analytics for collection'.
-                ' names, and provide the index for that dimension.'
+                'HTML snippet provided by analytics software. Inserted into'.
+                ' head element of each public page.'
             )
         ),
         array(
-            'name' => 'analytics_dimensions_exhibit',
-            'label' => __('Exhibit Dimension'),
-            'select' => $select,
+            'name' => 'analytics_dimensions_html_collection',
+            'label' => __('Collection'),
+            'textarea' => true,
             'explanation' => __(
-                'Create a Custom Dimension in Google Analytics for exhibit'.
-                ' names, and provide the index for that dimension.'
+                'HTML snippet inserted into head element of each public page'.
+                ' that is part of a collection. The placeholder %s will be'.
+                ' replaced with the collection title encoded as JSON literal.'
+            )
+        ),
+        array(
+            'name' => 'analytics_dimensions_html_exhibit',
+            'label' => __('Exhibit'),
+            'textarea' => true,
+            'explanation' => __(
+                'HTML snippet inserted into head element of each public page'.
+                ' that is part of an exhibit. The placeholder %s will be'.
+                ' replaced with the exhibit title encoded as JSON literal.'
             )
         )
     )
@@ -64,6 +67,8 @@ $sections = array(
                 <?php elseif (isset($field['checkbox'])): ?>
                     <input type="hidden" name="<?php echo $field['name']; ?>" value="">
                     <input type="checkbox" name="<?php echo $field['name']; ?>" id="<?php echo $field['name']; ?>" value="<?php echo $field['checkbox']; ?>"<?php if (get_option($field['name']) == $field['checkbox']) echo ' checked'; ?>>
+                <?php elseif (isset($field['textarea'])): ?>
+                    <textarea name="<?php echo $field['name']; ?>" id="<?php echo $field['name']; ?>"><?php echo get_option($field['name']); ?></textarea>
                 <?php else: ?>
                     <input type="<?php print(empty($field['password']) ? 'text' : 'password'); ?>" name="<?php echo $field['name']; ?>" id="<?php echo $field['name']; ?>" value="<?php echo get_option($field['name']); ?>">
                 <?php endif; ?>

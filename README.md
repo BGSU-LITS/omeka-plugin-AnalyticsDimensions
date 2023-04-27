@@ -1,6 +1,6 @@
 omeka-plugin-AnalyticsDimensions
 ================================
-Omeka plugin for Google Analytics with dimensions for collections and exhibits.
+Omeka plugin for providing analytics with dimensions for collections and exhibits.
 
 ## Installing Releases
 Released versions of this plugin are [available for download](https://github.com/BGSU-LITS/omeka-plugin-AnalyticsDimensions/releases). You may extract the archive to your Omeka plugin directory. [Installing the plugin in Omeka.](http://omeka.org/codex/Managing_Plugins_2.0)
